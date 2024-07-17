@@ -5,14 +5,16 @@ import json
 import random
 
 async def send_classification(websocket, path):
-    while True:
+    # while True:
         
         # signal_data = {"eeg_data": random.choice([1, 2, 3])}  # 模拟信号数据
-        signal_data = random.choice([1, 2, 3, 4])  # 模拟信号数据
+        # signal_data = random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])  # 模拟信号数据
+    for i in range(10):
+        signal_data = i
         # classification_result = classify_signal(signal_data)
         # await websocket.send(json.dumps(classification_result))
         await websocket.send(json.dumps(signal_data))
-        await asyncio.sleep(5)  # 模拟信号处理和分类间隔
+        await asyncio.sleep(3)  # 模拟信号处理和分类间隔
 
 def classify_signal(signal_data):
     if signal_data["eeg_data"] == 1:
