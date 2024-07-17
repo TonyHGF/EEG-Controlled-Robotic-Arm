@@ -2,7 +2,10 @@
 
 ShanghaiTech University BME1317 Course Project
 
-
 ## Environment
 
-run `pip install -r ./requirement.txt` in terminal.
+Run in terminal:
+
+```
+pip install -r ./requirement.txt
+```
