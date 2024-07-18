@@ -78,13 +78,15 @@ async def receive_data():
                 print("Connection closed")
                 break
 
+
 def update_plot(frame):
     if eeg_data:
         plt.cla()  # 清除当前图形
         plt.plot(eeg_data[-100:])  # 只绘制最近的100个数据点
         plt.xlabel('Time')
-        plt.ylabel('EEG Data (uV)')
+        plt.ylabel('EEG Data (mV)')
         plt.title('Real-time EEG Data')
+
 
 def main():
     # 启动WebSocket客户端以接收数据
