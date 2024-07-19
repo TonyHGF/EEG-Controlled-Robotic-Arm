@@ -21,8 +21,9 @@ class EEGDataCollector:
 
     def make_folder(self):
         write_time = time.localtime()
-        formatted_time = time.strftime("%Y-%m-%d-%H-%M-%S", write_time)
-        folder = os.path.join('../data/', f'{self.start_time}')
+        # formatted_time = time.strftime("%Y-%m-%d-%H-%M-%S", write_time)
+        # folder = os.path.join('../data/', f'{self.start_time}')
+        folder = '../data/'
         if not os.path.exists(folder):
             os.makedirs(folder)
         return folder
@@ -37,7 +38,7 @@ class EEGDataCollector:
     def fun(self, sample):
         current_time = time.time()
         if current_time - self.start_time < self.duration:
-            print(current_time - self.start_time)
+            # print(current_time - self.start_time)
             self.eeg_data.append(np.array(sample.channels_data) * self.uVolts_per_count)
         else:
             # write_time = time.localtime()
@@ -61,16 +62,16 @@ class EEGDataCollector:
             # self.board.stop_stream()
             self.save_data("../data/eeg_data.npy")
             print("Data saved to", os.path.abspath("../data/eeg_data.npy"))
-            start_server = websockets.serve(self.send_to_server, "localhost", 5000)
-            asyncio.get_event_loop().run_until_complete(start_server)
-            # self.board.stop_stream()
-            try:
-                asyncio.get_event_loop().run_forever()
-            except KeyboardInterrupt:
-                self.board.stop_stream()
-            except Exception as e:
-                print(e)
-                self.board.stop_stream()
+            # start_server = websockets.serve(self.send_to_server, "localhost", 5000)
+            # asyncio.get_event_loop().run_until_complete(start_server)
+            # # self.board.stop_stream()
+            # try:
+            #     asyncio.get_event_loop().run_forever()
+            # except KeyboardInterrupt:
+            #     self.board.stop_stream()
+            # except Exception as e:
+            #     print(e)
+            #     self.board.stop_stream()
 
     async def send_to_server(self, websocket, path):
         print("send to server")
@@ -82,6 +83,7 @@ class EEGDataCollector:
 
     def save_data(self, filename):
         save_data = np.array(self.eeg_data)
+        print('#', save_data.shape)
         np.save(filename, save_data)
 
 
@@ -91,7 +93,13 @@ def main():
     eeg_data_collector = EEGDataCollector(port, duration=5, debug=False)
 
     # Start collecting data
-    eeg_data_collector.collect_data()
+    try:
+        eeg_data_collector.collect_data()
+    except KeyboardInterrupt:
+        eeg_data_collector.board.stop_stream()
+    except Exception as e:
+        print(e)
+        eeg_data_collector.board.stop_stream()
 
     exit()
     # Start WebSocket server
