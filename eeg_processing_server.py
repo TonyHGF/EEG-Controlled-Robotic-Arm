@@ -1,34 +1,59 @@
-# signal_processing_server.py
 import asyncio
 import websockets
 import json
-import random
+import numpy as np
 
-async def send_classification(websocket, path):
-    # while True:
-        
-        # signal_data = {"eeg_data": random.choice([1, 2, 3])}  # 模拟信号数据
-        # signal_data = random.choice([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])  # 模拟信号数据
-    for i in range(10):
-        signal_data = i
-        # classification_result = classify_signal(signal_data)
-        # await websocket.send(json.dumps(classification_result))
-        await websocket.send(json.dumps(signal_data))
-        await asyncio.sleep(3)  # 模拟信号处理和分类间隔
+WS_PORT = 5000
+DATA_FILE = "data_cache.json"
 
-def classify_signal(signal_data):
-    if signal_data["eeg_data"] == 1:
-        return {"classification": "move_up"}
-    elif signal_data["eeg_data"] == 2:
-        return {"classification": "move_down"}
-    elif signal_data["eeg_data"] == 3:
-        return {"classification": "move_left"}
-    return {"classification": "unknown"}
+data_cache = {"timestamps": [], "channels": [[] for _ in range(8)]}
+buffer_size = 1000  # 缓存大小，调整以适应你的需求
 
-def run_server():
-    start_server = websockets.serve(send_classification, "localhost", 5000)
-    asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().run_forever()
+async def process_signal(data):
+    # 这里可以添加任何信号处理逻辑
+    return data
 
-if __name__ == '__main__':
-    run_server()
+async def ws_handler(websocket, path):
+    print("WebSocket connection established")
+    try:
+        async for message in websocket:
+            data = json.loads(message)
+            print("Received data via WebSocket:", data)
+
+            # 添加数据到缓存
+            timestamp = data["timestamp"]
+            channels = data["data"]
+            data_cache["timestamps"].append(timestamp)
+            for i in range(8):
+                data_cache["channels"][i].append(channels[i])
+
+            # 维护缓存大小
+            if len(data_cache["timestamps"]) > buffer_size:
+                data_cache["timestamps"] = data_cache["timestamps"][-buffer_size:]
+                for i in range(8):
+                    data_cache["channels"][i] = data_cache["channels"][i][-buffer_size:]
+
+            # 将数据写入文件
+            with open(DATA_FILE, 'w') as f:
+                json.dump(data_cache, f)
+
+            # 处理接收到的数据
+            processed_data = await process_signal(data)
+
+            # 发送响应
+            response = "Message received"
+            await websocket.send(response)
+            print(f"Sent response: {response}")
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
+        print("WebSocket connection closed")
+
+async def main():
+    async with websockets.serve(ws_handler, "localhost", WS_PORT):
+        print(f"Serving WebSocket on port {WS_PORT}")
+        await asyncio.Future()  # run forever
+
+if __name__ == "__main__":
+    
+    asyncio.run(main())

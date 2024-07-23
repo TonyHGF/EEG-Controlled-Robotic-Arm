@@ -1,4 +1,4 @@
-# arm_control_server.py
+# arm_control_client.py
 import asyncio
 import websockets
 import json

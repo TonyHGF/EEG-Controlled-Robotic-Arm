@@ -36,12 +36,15 @@ class EEGDataCollector:
         self.board.start_stream(self.m_callback)
 
     def m_callback(self, sample):
-        # 仅发送数据到服务器
-        data = (np.array(sample.channels_data) * self.uVolts_per_count).tolist()
-        asyncio.run_coroutine_threadsafe(self.send_to_server(data), self.loop)
+        current_time = time.time()
+        data_with_timestamp = {
+            "timestamp": current_time,
+            "data": (np.array(sample.channels_data) * self.uVolts_per_count).tolist()
+        }
+        asyncio.run_coroutine_threadsafe(self.send_to_server(data_with_timestamp), self.loop)
 
         if self.debug:
-            print(data)      
+            print(data_with_timestamp)      
 
     async def send_to_server(self, data):
         try:
