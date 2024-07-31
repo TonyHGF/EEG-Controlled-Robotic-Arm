@@ -44,7 +44,8 @@ class EEGDataCache:
         }
     
     def check_blink(self):
-        if self.data[self.current_size - 1][1] > 100 and self.data[self.current_size - 1][6] > 100:
+        return False
+        if self.data[self.current_size - 1][0] > 100 and self.data[self.current_size - 1][1] > 100:
             return True
 
     def check_channel_1(self, signal, timestamp):
@@ -56,6 +57,7 @@ class EEGDataCache:
         return self.data[self.current_size - 1] - self.data[self.current_size - 2]
     
     def check_knock(self):
+        return -1
         max_value = -100000
         max_channel = -1
         for i in range(8):
@@ -63,7 +65,13 @@ class EEGDataCache:
                 max_value = self.data[self.current_size - 1][i]
                 max_channel = i
 
-        if max_value > 400:
+        if np.mean(self.data[self.current_size - 1]) >= 600:
+            return -1
+
+        # if 4 <= max_channel <= 7:
+        #     return -1   
+
+        if max_value > 600:
             return max_channel
         else:
             return -1

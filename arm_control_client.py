@@ -3,9 +3,10 @@ import asyncio
 import websockets
 import json
 import serial
+import time
 
 ser = serial.Serial(
-    port='COM5',  # 根据实际情况修改端口号
+    port='COM8',  # 根据实际情况修改端口号
     baudrate=115200,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
@@ -15,10 +16,15 @@ ser = serial.Serial(
 
 async def receive_classification():
     async with websockets.connect("ws://localhost:5000") as websocket:
+        print("Connected to EEG processing server")
         while True:
+            
             classification_data = await websocket.recv()
+            print("here")
             classification_data = json.loads(classification_data)
+            
             arm_command = convert_to_arm_command(classification_data)
+            print(f"Received classification: {classification_data}")
             ser.write(arm_command.encode())
             print(f"Sent command: {arm_command}")
 
@@ -28,7 +34,7 @@ global steer1
 global steer2
 global steer3
 global steer4
-global hand
+global hand_open
 
 
 def move_left(steer0):
@@ -101,24 +107,6 @@ def move_right4(steer4):
         steer4 += 100
         return f"#004P{steer4}T1500!\n"
     
-def move_open(hand):
-    if hand  == 1000:
-        return "#005P1000T1500!\n"
-    else:
-        hand -= 100
-        return f"#005P{hand}T1500!\n"
-    
-def move_close(hand):
-    if hand  == 2000:
-        return "#005P2000T1500!\n"
-    else:
-        hand += 100
-        return f"#005P{hand}T1500!\n"
-    
-
-
-    
-
 
 def convert_to_arm_command(classification_data):
     # 示例转换函数，需根据具体需求实现
@@ -145,10 +133,15 @@ def convert_to_arm_command(classification_data):
         return move_forward3(steer3)
     elif classification_data == 7:
         return move_backward3(steer3)
-    elif classification_data == 8:
-        return move_left4(steer4)
-    elif classification_data == 9:
-        return move_right4(steer4)   
+    # elif classification_data == 8:
+    #     return move_left4(steer4)
+    # elif classification_data == 9:
+    #     return move_right4(steer4)   
+    elif classification_data == "blink":
+        if hand_open == True:
+            return "#005P1500T1500!\n"
+        else:
+            return "#005P500T1500!\n"
     return "$DST!"
 
 if __name__ == '__main__':
@@ -157,6 +150,13 @@ if __name__ == '__main__':
     steer2 = 1500
     steer3 = 1500
     steer4 = 1500
-    hand = 1500
+    hand_open = False
+    ser.write("#005P500T1500!\n".encode())
+    time.sleep(3)
+    ser.write("#005P1500T1500!\n".encode())
+    # for i in range(5):
+    #     ser.write(move_forward(steer4).encode())
+
+    print("Arm control client started")
     asyncio.get_event_loop().run_until_complete(receive_classification())
     asyncio.get_event_loop().run_forever()
