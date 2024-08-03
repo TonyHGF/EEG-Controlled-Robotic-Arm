@@ -1,0 +1,79 @@
+\documentclass[12pt]{report}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{titlesec}
+
+% Page settings
+\geometry{a4paper, margin=1in}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyfoot[C]{\thepage}
+
+% Title format
+\titleformat{\chapter}[block]{\normalfont\Large\bfseries}{\thechapter.}{1em}{}
+
+% Title page
+\title{EEG Controlled Robotic Arm}
+
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+% Title page
+\maketitle
+
+% Abstract
+\begin{abstract}
+This is where you write the abstract of your report. It should provide a brief summary of the content and the main findings.
+\end{abstract}
+
+% Table of contents
+\tableofcontents
+\listoffigures
+\listoftables
+
+% Main content
+\chapter{Introduction}
+\section{Background}
+This section provides the background of your report.
+
+\section{Objective}
+State the objective of your report here.
+
+\chapter{Literature Review}
+Review the relevant literature here.
+
+\chapter{Methodology}
+Describe the methods and procedures used in your research.
+
+\chapter{Results}
+Present the results of your research here.
+
+\chapter{Discussion}
+Discuss the implications of your results.
+
+\chapter{Conclusion}
+Summarize your findings and suggest future research directions.
+
+% References
+\begin{thebibliography}{99}
+\bibitem{ref1}
+Author, ``Title of the paper,'' \textit{Journal Name}, vol. x, no. x, pp. xx-xx, Year.
+
+\bibitem{ref2}
+Author, ``Title of the book,'' Edition, Publisher, Year.
+\end{thebibliography}
+
+\end{document}
