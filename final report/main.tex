@@ -24,9 +24,8 @@
 \titleformat{\chapter}[block]{\normalfont\Large\bfseries}{\thechapter.}{1em}{}
 
 % Title page
-\title{EEG Controlled Robotic Arm}
-
-\author{Your Name}
+\title{EEG Controlled Robotic Arm \\ \large{BME 1317 Project}}
+\author{Gangfeng Hu \and Quanyu Chen \and Yumeng Wang}
 \date{\today}
 
 \begin{document}
@@ -36,36 +35,58 @@
 
 % Abstract
 \begin{abstract}
-This is where you write the abstract of your report. It should provide a brief summary of the content and the main findings.
+This report presents the development and implementation of an EEG (Electroencephalography) controlled robotic arm. The project utilizes EEG signals to control a robotic arm, aiming to achieve tasks through brain-computer interface technology. The report details the research background, materials used, system workflow, and current challenges faced during the project's iterations.
 \end{abstract}
 
 % Table of contents
 \tableofcontents
-\listoffigures
-\listoftables
+% \listoffigures
+% \listoftables
 
 % Main content
+
 \chapter{Introduction}
-\section{Background}
-This section provides the background of your report.
+\section{Research Background}
+EEG (Electroencephalography) is a method to record the spontaneous electrical activity of the brain. When the brain is active, postsynaptic potentials from numerous neurons are summed up, and these electric fields are conducted to the scalp's surface. Electrodes pick up these signals and transmit them to an electroencephalogram machine.
+
+Brain waves are divided into frequency bands such as Delta, Theta, Alpha, Beta, and Gamma, each associated with specific brain states or activities. The 10-20 system is a standardized method of electrode placement for EEG recording, ensuring consistency with brain anatomy.
 
 \section{Objective}
-State the objective of your report here.
+The primary objective is to control a robotic arm using EEG signals. This involves capturing brain activity, processing the signals, and translating them into commands for the robotic arm.
 
-\chapter{Literature Review}
-Review the relevant literature here.
+\chapter{Current Materials}
+\section{EEG Acquisition Device}
+The project uses an EEG acquisition device based on the OpenBCI open-source platform, including a Cyton Board, electrodes, and a headwear. The Cyton Board processes and sends the data to a graphical user interface (GUI).
 
-\chapter{Methodology}
-Describe the methods and procedures used in your research.
+\section{Robotic Arm}
+The Songjia Am1 robotic arm is equipped with six steering engines and supports serial port transmission. Each engine has an individual value of Pulse Width Modulation (PWM), controlled by an STM32 circuit board through C code.
 
-\chapter{Results}
-Present the results of your research here.
+\chapter{Version Iteration}
+\section{Version 1}
+The initial version aims to control the robotic arm using specific commands like blinking to perform simple tasks. This involves online reading and identification of EEG signals, controlling the arm, and ensuring real-time communication between devices.
 
-\chapter{Discussion}
-Discuss the implications of your results.
+\section{Version 2}
+The second version implements more commands to achieve "remote object retrieval" by identifying different brain commands and coordinating the robotic arm's six engines. This version has been implemented successfully.
 
-\chapter{Conclusion}
-Summarize your findings and suggest future research directions.
+\section{Version 2.5}
+Version 2.5 aims to give commands using the Steady-State Visual Evoked Potentials (SSVEP) method. SSVEP is a brain response elicited by visual stimuli flickering at specific frequencies.
+
+\section{Version 3}
+The final version plans to use motor imagery to enable the robotic arm to mimic human arm movements. This involves identifying different commands from EEG signals of various mental motor imagery and classifying them properly.
+
+\chapter{System Workflow}
+\section{EEG Signal Processing}
+The EEG cap captures raw signals, which are filtered and transmitted wirelessly using the Lab Streaming Layer (LSL) to the OpenBCI GUI. The EEG Cache stores eight-channel signals over time, processes them in real-time, and transmits them to a classifier.
+
+\section{Arm Control}
+The classified signals are sent via WebSocket to the robotic arm controller, which sends commands through a serial port to control the arm's movements.
+
+\chapter{Current Challenges}
+\section{Version 2.5 Challenges}
+Designing a system for real-time screen-EEG-arm control is complex. Applying an appropriate model for real-time classification is challenging, and there is a lack of fully public related work.
+
+\section{Version 3 Challenges}
+Similar to version 2.5, achieving high accuracy in motor imagery classification is difficult. The highest accuracy achieved so far is around 72.15% with MSRTNet.
 
 % References
 \begin{thebibliography}{99}
